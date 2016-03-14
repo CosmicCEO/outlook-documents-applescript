@@ -30,3 +30,12 @@ Things to do:
 * figure out a better notification service, currently floods notification center
 * assert better error protection and control
 * Improve attributes, as the code was originated over time i have lost control of reference matter. Functions used are found in the various websites noted in the function, attributed therein
+
+
+
+
+
+Convert bit and byte
+function convertByteSize(byteSize, KBSize, decPlaces)
+Nigel Garvey (2011-09-14 02:49:00 pm)
+http://macscripter.net/viewtopic.php?pid=144138
