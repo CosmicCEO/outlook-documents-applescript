@@ -29,7 +29,7 @@ Things to do:
 * optimize calls, variables, sub-routines, and lists - need to do
 * figure out a better notification service, currently floods notification center
 * assert better error protection and control
-* Improve attributes, as the code was originated over time i have lost control of reference matter. Functions used are found in the various websites noted in the function, attributed therein
+* Improve attributes, as the code was originated over time i have lost control of reference matter. Functions used are found in the various websites noted in the function, attributed therein - in progress 75%
 
 
 
@@ -39,3 +39,8 @@ Convert bit and byte
 function convertByteSize(byteSize, KBSize, decPlaces)
 Nigel Garvey (2011-09-14 02:49:00 pm)
 http://macscripter.net/viewtopic.php?pid=144138
+
+Make some folders
+function to checkForFolder(fParent, fName)
+twtwtw (Oct 31, 2012)
+https://discussions.apple.com/message/20178009#20178009
