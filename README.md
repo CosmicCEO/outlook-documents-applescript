@@ -1,5 +1,6 @@
 # outlook-documents-applescript
 Selectively handle attachments in Outlook for Mac using AppleScript.  Tidy and clean up.  Save server space.
+I use this to push all of my .office type documents to a sync folder (box.com) in the coded case.  THese are synced to the cloud.
 
 (*
 
@@ -10,7 +11,12 @@ When an email is selected and then this script is run
 * for each attachment in the email a comparison to a list of file types to save and delete is made
 * for each attachment that is Office type document, it is cataloged, saved to downloadPath, and deleted from the email.
 * the catalog of attachmentList holds a record for each attachment for processing information back to user
-	anAttachment contains {nameAtt, extensionDigits, sizeAtt, examination, shoulddelete, wassaved, isdeleted}
+* anAttachment contains {nameAtt, extensionDigits, sizeAtt, examination, shoulddelete, wassaved, isdeleted}
+* if a file is removed, its name and filesize will be included in a simple HTML table and pre-pended to the original email; the file name will link to the locally saved file.
+* file names are saved with uniquestamp prefix, spaces are removed to promote uniqueness of files in a single deep folder which means I don't have to come up with some folder scheme to store attachments
+
+* if a file isn't matching .office kind, it will remain - no touchy, no feely.
+
 Script is not optimized and probably uses more variables and lists than needed
 
 Things to do:
