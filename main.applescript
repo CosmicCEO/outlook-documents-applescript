@@ -1,6 +1,6 @@
 (*
 
-© 2016 Jerod M. Price
+(c) 2016 Jerod M. Price
 aka COSMICCEO
 aka RODDYROTTEN
 
