@@ -4,7 +4,7 @@
 aka COSMICCEO
 aka RODDYROTTEN
 aka ULOTHRIX
-aka SEÃ‘OREPIPHYTE
+aka SE„OREPIPHYTE
 
 *)
 
@@ -70,6 +70,7 @@ tell application "Outlook"
 		
 		--get information from the message, and store it in variables
 		set theName to subject of theMessage
+		set fURL to exchange id of theMessage
 		set theTime to time received of theMessage --set theCategory to category of theMessage
 		set theShortTime to time string of theTime as string
 		set theCleanTime to my CleanName(theShortTime) as string
@@ -125,10 +126,11 @@ tell application "Outlook"
 					save thisAttachment in file dlClean
 					copy {nameAtt, dlClean, sizeAtt, true, true, false, false} to the end of attachmentList
 					
+					
 					--after we are saved, then mark it as so in the list of files we are tracking
 					set item 6 of the last item of attachmentList to true
 					display notification "Saved " & nameAtt with title ScriptTitle subtitle "Success"
-					
+					my updateFileWhereFromAttribute(dlClean, fURL)
 					--need to do this as a try just in case it goes wrong
 					delete thisAttachment
 					
@@ -201,8 +203,21 @@ tell application "Outlook"
 end tell
 
 
+
+-- use xattr to leave a link behind
+on updateFileWhereFromAttribute(fpath, fURL)
+	
+	set myCommand to "xattr -w com.apple.metadata:kMDItemWhereFroms " & fURL & " " & fpath
+	do shell script myCommand
+	
+end updateFileWhereFromAttribute
+
+
+
 (* Convert a size in bytes to a convenient larger unit size with suffix. The 'KBSize' parameter specifies the number of units in the next unit up (1024 or 1000; or 'missing value' for 1000 in Snow Leopard or later and 1024 otherwise). The 'decPlaces' parameter specifies to how many decimal places the result is to be rounded (but not padded). *)
+
 on convertByteSize(byteSize, KBSize, decPlaces)
+
 	if (KBSize is missing value) then set KBSize to 1000 + 24 * (((system attribute "sysv") < 4192) as integer)
 	
 	if (byteSize is 1) then
