@@ -52,7 +52,7 @@ set downloadFolder to myOLA & "-" & (year of (current date) as string)
 set downloadString to my checkForFolder(downloadPath, downloadFolder) as string
 
 -- main loop
-tell application "Outlook"
+tell application "Microsoft Outlook"
 	
 	-- get the currently selected message or messages
 	set selectedMessages to current messages
@@ -207,7 +207,7 @@ end tell
 -- use xattr to leave a link behind
 on updateFileWhereFromAttribute(fpath, fURL)
 	
-	set myCommand to "xattr -w com.apple.metadata:kMDItemWhereFroms " & fURL & " " & fpath
+	set myCommand to "xattr -w com.apple.metadata:kMDItemWhereFroms " & "outlook://" & fURL & " " & fpath
 	do shell script myCommand
 	
 end updateFileWhereFromAttribute
@@ -217,7 +217,7 @@ end updateFileWhereFromAttribute
 (* Convert a size in bytes to a convenient larger unit size with suffix. The 'KBSize' parameter specifies the number of units in the next unit up (1024 or 1000; or 'missing value' for 1000 in Snow Leopard or later and 1024 otherwise). The 'decPlaces' parameter specifies to how many decimal places the result is to be rounded (but not padded). *)
 
 on convertByteSize(byteSize, KBSize, decPlaces)
-
+	
 	if (KBSize is missing value) then set KBSize to 1000 + 24 * (((system attribute "sysv") < 4192) as integer)
 	
 	if (byteSize is 1) then
