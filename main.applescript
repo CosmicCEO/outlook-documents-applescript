@@ -130,7 +130,7 @@ tell application "Microsoft Outlook"
 					--after we are saved, then mark it as so in the list of files we are tracking
 					set item 6 of the last item of attachmentList to true
 					display notification "Saved " & nameAtt with title ScriptTitle subtitle "Success"
-					my updateFileWhereFromAttribute(dlClean, fURL)
+					--my updateFileWhereFromAttribute(dlClean, fURL)
 					--need to do this as a try just in case it goes wrong
 					delete thisAttachment
 					
