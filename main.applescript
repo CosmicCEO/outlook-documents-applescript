@@ -52,10 +52,10 @@ set downloadFolder to myOLA & "-" & (year of (current date) as string)
 set downloadString to my checkForFolder(downloadPath, downloadFolder) as string
 
 -- main loop
-tell application "Microsoft Outlook"
+tell application "Outlook"
 	
 	-- get the currently selected message or messages
-	set selectedMessages to current messages
+	set selectedMessages to selected objects
 	
 	-- if there are no messages selected, warn the user and then quit
 	if selectedMessages is {} then
