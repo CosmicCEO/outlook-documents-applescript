@@ -1,10 +1,6 @@
 (*
 
 (c) 2016 Jerod M. Price
-aka COSMICCEO
-aka RODDYROTTEN
-aka ULOTHRIX
-aka SE„OREPIPHYTE
 
 *)
 
