@@ -1,10 +1,6 @@
 (*
 
 (c) 2016 Jerod M. Price
-aka COSMICCEO
-aka RODDYROTTEN
-aka ULOTHRIX
-aka SE„OREPIPHYTE
 
 *)
 
@@ -52,7 +48,7 @@ set downloadFolder to myOLA & "-" & (year of (current date) as string)
 set downloadString to my checkForFolder(downloadPath, downloadFolder) as string
 
 -- main loop
-tell application "Outlook"
+tell application "Microsoft Outlook"
 	
 	-- get the currently selected message or messages
 	set selectedMessages to selected objects
@@ -66,137 +62,139 @@ tell application "Outlook"
 	-- we one or more messaged handle the first and then work through each subsequent
 	repeat with theMessage in selectedMessages
 		
-		set attachmentList to {} -- empty array for housekeeping
-		
-		--get information from the message, and store it in variables
-		set theName to subject of theMessage
-		set fURL to exchange id of theMessage
-		set theTime to time received of theMessage --set theCategory to category of theMessage
-		set theShortTime to time string of theTime as string
-		set theCleanTime to my CleanName(theShortTime) as string
-		--set thePriority to priority of theMessage
-		set theContent to content of theMessage
-		
-		-- configure some counters to help track iterations through various attachments and documents in an email
-		set counterA to (count of (get attachments of theMessage))
-		set counterB to 0
-		set counterC to 0
-		set counterD to 0
-		set errorCount to 0
-		set didWork to false
-		set didPic to false
-		repeat while ((counterA - counterB - counterC) > 0) and (counterD < (counterA * 2))
+		if class of theMessage is incoming message then
 			
-			-- counterD prevents runaway loop
-			-- time to save and then delete the offensive attachments
-			-- sort the array by isOffice at end, then delete from end forward
-			-- end forward because the count is reset by MS OFFFICE when something changes
-			-- if we started at the front, a failure will happen.
+			set attachmentList to {} -- empty array for housekeeping
 			
-			try
-				if (counterB = 0 and counterC = 0 and counterD = 0) then -- the first pass action
-					set thisAttachment to first item in (get attachments of theMessage)
-					set nameAtt to name of thisAttachment
-					
-					-- in future rev we need to make sure we don't accidentally clean away the suffix slash file type
-					set cleannameAtt to my CleanName(nameAtt)
-					
-				else -- do the second and subsequent pass
-					set thisAttachment to item (1 + counterC) in (get attachments of theMessage)
-					set nameAtt to name of thisAttachment
-					
-					-- in future rev we need to make sure we don't accidentally clean away the suffix slash file type
-					set cleannameAtt to my CleanName(nameAtt)
-				end if
-			end try
+			--get information from the message, and store it in variables
+			set theName to subject of theMessage
+			set fURL to exchange id of theMessage
+			set theTime to time received of theMessage --set theCategory to category of theMessage
+			set theShortTime to time string of theTime as string
+			set theCleanTime to my CleanName(theShortTime) as string
+			--set thePriority to priority of theMessage
+			set theContent to content of theMessage
 			
-			if nameAtt is not in attachmentList then -- only handle attachments that we have not already handled, as outlook resets the attachment list array after one is deleted or modified we keep record of those touched in a list
+			-- configure some counters to help track iterations through various attachments and documents in an email
+			set counterA to (count of (get attachments of theMessage))
+			set counterB to 0
+			set counterC to 0
+			set counterD to 0
+			set errorCount to 0
+			set didWork to false
+			set didPic to false
+			repeat while ((counterA - counterB - counterC) > 0) and (counterD < (counterA * 2))
 				
-				set sizeAtt to (my convertByteSize(((file size of thisAttachment) as integer), missing value, 2))
-				set extensionDigits to my returnExtension(text -4 through -1 of nameAtt)
+				-- counterD prevents runaway loop
+				-- time to save and then delete the offensive attachments
+				-- sort the array by isOffice at end, then delete from end forward
+				-- end forward because the count is reset by MS OFFFICE when something changes
+				-- if we started at the front, a failure will happen.
 				
-				if isOffice contains extensionDigits then -- do this action if the attachment of of type isOffice
-					
-					set didWork to true
-					set theCleanAttachmentIdentifier to theCleanTime & "_" & cleannameAtt as string
-					set dlClean to downloadString & theCleanAttachmentIdentifier as string
-					
-					--need to do this as a try just in case it didn't save
-					--need to confirm it saved and check file exists so we don't delete if not saved
-					save thisAttachment in file dlClean
-					copy {nameAtt, dlClean, sizeAtt, true, true, false, false} to the end of attachmentList
-					
-					
-					--after we are saved, then mark it as so in the list of files we are tracking
-					set item 6 of the last item of attachmentList to true
-					display notification "Saved " & nameAtt with title ScriptTitle subtitle "Success"
-					--my updateFileWhereFromAttribute(dlClean, fURL)
-					--need to do this as a try just in case it goes wrong
-					delete thisAttachment
-					
-					
-					set counterB to counterB + 1
-					set counterD to counterD + 1
-					set item 7 of the last item of attachmentList to true
-					
-					display notification "Deleted " & nameAtt & " from email " & theName with title ScriptTitle subtitle "Success"
-					
-					
-				else if isGraphic contains extensionDigits then -- do this action if the attachment of of type isGraphic
-					
-					set didPic to true
-					copy {nameAtt, "", sizeAtt, true, false, false, false} to the end of attachmentList
-					set counterC to counterC + 1
-					set counterD to counterD + 1
-					
-					
-				else -- do this action when the attachment is of some other type
-					copy {nameAtt, "", sizeAtt, true, false, false, false} to the end of attachmentList
-					set counterC to counterC + 1
-					set counterD to counterD + 1
-					
-					
-				end if -- end attachment type was identified as Office, Graphic, or other
-			end if -- end counters have run out
-		end repeat -- end no more attachments to be found
-		
-		-- create a table of attachments
-		-- format nicely with HTML
-		-- pre-pend the table with the email content theContent
-		
-		
-		-- need to do a case if didWork as a list, then case if didPic post some thumbs but push original to folder, then case other stuff...end
-		
-		
-		if (didWork) then
-			
-			set HTMLList to ""
-			repeat with a in attachmentList
+				try
+					if (counterB = 0 and counterC = 0 and counterD = 0) then -- the first pass action
+						set thisAttachment to first item in (get attachments of theMessage)
+						set nameAtt to name of thisAttachment
+						
+						-- in future rev we need to make sure we don't accidentally clean away the suffix slash file type
+						set cleannameAtt to my CleanName(nameAtt)
+						
+					else -- do the second and subsequent pass
+						set thisAttachment to item (1 + counterC) in (get attachments of theMessage)
+						set nameAtt to name of thisAttachment
+						
+						-- in future rev we need to make sure we don't accidentally clean away the suffix slash file type
+						set cleannameAtt to my CleanName(nameAtt)
+					end if
+				end try
 				
-				set deleted to (the seventh item in a)
-				if deleted then
-					set b to (the second item in a)
+				if nameAtt is not in attachmentList then -- only handle attachments that we have not already handled, as outlook resets the attachment list array after one is deleted or modified we keep record of those touched in a list
 					
-					set myWEBNAME to my myCleanURL(b)
-					set myWEBNAME to "<a href='file://" & myWEBNAME & "'>here</a>"
-					set HTMLList to HTMLList & tr1 & td1 & (the first item in a) & td2 & td1 & myWEBNAME & td2 & td1 & (the third item in a) & td2 & tr2
-				end if
+					set sizeAtt to (my convertByteSize(((file size of thisAttachment) as integer), missing value, 2))
+					set extensionDigits to my returnExtension(text -4 through -1 of nameAtt)
+					
+					if isOffice contains extensionDigits then -- do this action if the attachment of of type isOffice
+						
+						set didWork to true
+						set theCleanAttachmentIdentifier to theCleanTime & "_" & cleannameAtt as string
+						set dlClean to downloadString & theCleanAttachmentIdentifier as string
+						
+						--need to do this as a try just in case it didn't save
+						--need to confirm it saved and check file exists so we don't delete if not saved
+						save thisAttachment in file dlClean
+						copy {nameAtt, dlClean, sizeAtt, true, true, false, false} to the end of attachmentList
+						
+						
+						--after we are saved, then mark it as so in the list of files we are tracking
+						set item 6 of the last item of attachmentList to true
+						display notification "Saved " & nameAtt with title ScriptTitle subtitle "Success"
+						--my updateFileWhereFromAttribute(dlClean, fURL)
+						--need to do this as a try just in case it goes wrong
+						delete thisAttachment
+						
+						
+						set counterB to counterB + 1
+						set counterD to counterD + 1
+						set item 7 of the last item of attachmentList to true
+						
+						display notification "Deleted " & nameAtt & " from email " & theName with title ScriptTitle subtitle "Success"
+						
+						
+					else if isGraphic contains extensionDigits then -- do this action if the attachment of of type isGraphic
+						
+						set didPic to true
+						copy {nameAtt, "", sizeAtt, true, false, false, false} to the end of attachmentList
+						set counterC to counterC + 1
+						set counterD to counterD + 1
+						
+						
+					else -- do this action when the attachment is of some other type
+						copy {nameAtt, "", sizeAtt, true, false, false, false} to the end of attachmentList
+						set counterC to counterC + 1
+						set counterD to counterD + 1
+						
+						
+					end if -- end attachment type was identified as Office, Graphic, or other
+				end if -- end counters have run out
+			end repeat -- end no more attachments to be found
+			
+			-- create a table of attachments
+			-- format nicely with HTML
+			-- pre-pend the table with the email content theContent
+			
+			
+			-- need to do a case if didWork as a list, then case if didPic post some thumbs but push original to folder, then case other stuff...end
+			
+			
+			if (didWork) then
 				
-			end repeat
+				set HTMLList to ""
+				repeat with a in attachmentList
+					
+					set deleted to (the seventh item in a)
+					if deleted then
+						set b to (the second item in a)
+						
+						set myWEBNAME to my myCleanURL(b)
+						set myWEBNAME to "<a href='file://" & myWEBNAME & "'>here</a>"
+						set HTMLList to HTMLList & tr1 & td1 & (the first item in a) & td2 & td1 & myWEBNAME & td2 & td1 & (the third item in a) & td2 & tr2
+					end if
+					
+				end repeat
+				
+				set the category of theMessage to {category "Files Removed", category "OLA"}
+				set HTMLList to table1 & firstROW & HTMLList & table2
+				set content of theMessage to HTMLList & br & theContent
+				
+			else
+				set the category of theMessage to {category "OLA"}
+			end if
 			
-			set the category of theMessage to {category "Files Removed", category "OLA"}
-			set HTMLList to table1 & firstROW & HTMLList & table2
-			set content of theMessage to HTMLList & br & theContent
 			
-		else
-			set the category of theMessage to {category "OLA"}
-		end if
-		
-		
-		set HTMLList to "" -- empty for housekeeping
-		
-		-- nearly there...do it again if more emails are selected
-		
+			set HTMLList to "" -- empty for housekeeping
+			
+			-- nearly there...do it again if more emails are selected
+		end if -- end of incoming messages
 	end repeat -- end because no more emails
 	set attachmentList to {} -- empty array for housekeeping
 	
